@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Geist_Mono, Inter } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
+import ThemeProvider from "@/context/theme";
+import NavBar from "@/components/navigation/navbar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,10 +28,22 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
+      suppressHydrationWarning
       lang="en"
       className={`${inter.className} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ThemeProvider
+          attribute='class'
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NavBar/>
+          {children}
+        </ThemeProvider>
+        
+      </body>
     </html>
   );
 }
