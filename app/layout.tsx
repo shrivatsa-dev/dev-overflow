@@ -2,18 +2,20 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/context/theme";
-import NavBar from "@/components/navigation/navbar";
+import { Toaster } from "@/components/ui/sonner";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight:['100','200','300','400','500', '700', '800', '900' ],
+  weight: ["100", "200", "300", "400", "500", "700", "800", "900"],
 });
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight:['300','400','500', '700']
+  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -24,26 +26,24 @@ export const metadata: Metadata = {
     icon: "/images/site-logo.svg",
   },
 };
-
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export const instant = false
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const session = await auth()
   return (
     <html
       suppressHydrationWarning
       lang="en"
       className={`${inter.className} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <ThemeProvider
-          attribute='class'
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <NavBar/>
-          {children}
-        </ThemeProvider>
-        
-      </body>
+      <SessionProvider session={session}>
+        <body className="flex min-h-full flex-col">
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </body>
+      </SessionProvider>
+      
     </html>
   );
 }
